@@ -12,29 +12,29 @@ pub struct OrderBook {
 
 // For print function. Alternatively, cli_table crate could be used to print this as well.
 struct OrderBookRow {
-    bid_qty: u32,
-    bid_price: f64,
-    offer_price: f64,
-    offer_qty: u32,
+    bid_qty: Option<u32>,
+    bid_price: Option<f64>,
+    offer_price: Option<f64>,
+    offer_qty: Option<u32>,
 }
 
 impl OrderBookRow {
     fn new(buy_order: &Option<&Order>, sell_order: &Option<&Order>) -> Self {
         let mut order_row: OrderBookRow = OrderBookRow {
-            bid_qty: 0,
-            bid_price: 0.0,
-            offer_price: 0.0,
-            offer_qty: 0,
+            bid_qty: None,
+            bid_price: None,
+            offer_price: None,
+            offer_qty: None,
         };
 
         if let Some(order) = buy_order {
-            order_row.bid_price = order.price;
-            order_row.bid_qty = order.quantity;
+            order_row.bid_price = Some(order.price);
+            order_row.bid_qty = Some(order.quantity);
         }
 
         if let Some(order) = sell_order {
-            order_row.offer_price = order.price;
-            order_row.offer_qty = order.quantity;
+            order_row.offer_price = Some(order.price);
+            order_row.offer_qty = Some(order.quantity);
         }
 
         order_row
@@ -42,8 +42,11 @@ impl OrderBookRow {
 
     fn print_row(self) {
         let row: String = format!(
-            "|  {:<11}|  {:<11.2}||{:>11.2}  |{:>11}  |",
-            self.bid_qty, self.bid_price, self.offer_price, self.offer_qty
+            "|  {:<11}|  {:<11}||{:>11}  |{:>11}  |",
+            self.bid_qty.map_or(" ".to_string(), |qty| qty.to_string()), 
+            self.bid_price.map_or(" ".to_string(), |price| format!("{:.2}", price)), 
+            self.offer_price.map_or(" ".to_string(), |price| format!("{:.2}", price)), 
+            self.offer_qty.map_or(" ".to_string(), |qty| qty.to_string()) 
         );
         println!("{}", row);
         println!("+-------------+-------------++-------------+-------------+");
@@ -59,6 +62,7 @@ impl OrderBook {
     }
 
     pub fn add_order(&mut self, order: Order) -> Result<(), anyhow::Error>{
+        // Add to array based on order type
         match order.order_type {
             OrderType::Buy => {
                 self.buy_orders.push(order);
@@ -66,11 +70,16 @@ impl OrderBook {
             OrderType::Sell => {
                 self.sell_orders.push(order);
             }
-            // _ => {
-            //     return Err(anyhow!("Invalid order type"))
-            // }
         }
+
+        // Sort the orders
+        self.sort_orders();
         Ok(())
+    }
+
+    fn sort_orders(&mut self) {
+        self.buy_orders.sort_by(|a, b| b.price.partial_cmp(&a.price).unwrap());
+        self.sell_orders.sort_by(|a, b| a.price.partial_cmp(&b.price).unwrap());
     }
 
     pub fn print(&self) {
@@ -87,7 +96,18 @@ impl OrderBook {
             order_book_rows.push(OrderBookRow::new(&Some(buy_order), &Some(sell_order)));
         }
 
+        // Handle remaining buy orders
+        for buy_order in self.buy_orders.iter().skip(order_book_rows.len()) {
+            order_book_rows.push(OrderBookRow::new(&Some(buy_order), &None));
+        }
 
+        // Handle remaining sell orders
+        for sell_order in self.sell_orders.iter().skip(order_book_rows.len()) {
+            order_book_rows.push(OrderBookRow::new(&None, &Some(sell_order)));
+        }
+
+
+        // Print rows
         for row in order_book_rows {
             row.print_row();
         }
