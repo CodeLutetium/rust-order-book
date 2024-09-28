@@ -1,36 +1,93 @@
-use order_book::{Order, OrderBook, OrderType, TransactionBook};
+use order_book::{Order, OrderBook, OrderBuilder, OrderType};
+use std::io;
 
 fn main() {
-    println!("Hello, world! This is the order book project");
-
     let mut order_book: OrderBook = OrderBook::new();
-    let mut transaction_book: TransactionBook = TransactionBook::new();
 
-    let order_1: Order = Order::new()
-        .order_type(OrderType::Buy)
-        .price(2.12)
-        .quantity(200)
-        .build();
-    let order_2: Order = Order::new()
-        .order_type(OrderType::Sell)
-        .price(2.17)
-        .quantity(100)
-        .build();
-    let order_3: Order = Order::new()
-        .order_type(OrderType::Sell)
-        .price(2.52)
-        .quantity(100)
-        .build();
-    let order_4: Order = Order::new()
-        .order_type(OrderType::Buy)
-        .price(2.42)
-        .quantity(200)
-        .build();
+    println!("Welcome to the order book project! This simple program aims to simulate a simple order book.");
+    loop {
+        println!("====================");
+        println!("|--  MAIN MENU   --|");
+        println!("====================");
+        println!("1) Submit new order");
+        println!("2) View Order Book");
+        println!("3) View Transactions");
+        println!("\nPress any other key to exit");
 
-    let _ = order_book.add_order(order_1);
-    let _ = order_book.add_order(order_2);
-    let _ = order_book.add_order(order_3);
-    let _ = order_book.add_order(order_4);
+        let mut input: String = String::new();
+        io::stdin().read_line(&mut input).unwrap();
 
-    order_book.print();
+        match input.trim() {
+            "1" => {
+                handle_create_order(&mut order_book);
+            }
+            "2" => {
+                order_book.print();
+            }
+            "3" => {
+                order_book.print_transactions();
+            }
+            _ => {
+                println!("Exiting now");
+                break;
+            }
+        }
+    }
+}
+
+fn handle_create_order(order_book: &mut OrderBook) {
+    let mut order_builder: OrderBuilder = Order::new();
+    let mut input: String = String::new();
+
+    println!("Welcome to the create order function. We will walk you through the steps to submit your order.");
+    println!("If an invalid value is given, we will return to the main menu automatically.");
+
+    // Get order type
+    println!("STEP 1: Do you wish to BUY or SELL? ");
+    println!("Buy: Press 'B'");
+    println!("Sell: Press 'S'");
+    io::stdin().read_line(&mut input).unwrap();
+    match input.to_lowercase().trim() {
+        "b" => {
+            order_builder.order_type(OrderType::Buy);
+        }
+        "s" => {
+            order_builder.order_type(OrderType::Sell);
+        }
+        _ => return,
+    }
+
+    // Get price
+    println!("STEP 2: Enter price (any number more than 0):");
+    input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    let price: f64 = match input.trim().parse() {
+        Ok(p) => p,
+        Err(_) => {
+            println!("Invalid price");
+            return;
+        }
+    };
+    // Return if price is negative
+    if price < 0.0 {
+        println!("Price cannot be negative");
+        return;
+    }
+    order_builder.price(price);
+
+    // Get quantity
+    println!("STEP 3: Enter quantity (any number more than 0):");
+    input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    let quantity: u32 = match input.trim().parse() {
+        Ok(q) => q,
+        Err(_) => return,
+    };
+    order_builder.quantity(quantity);
+
+    let order: Order = order_builder.build();
+    match order_book.add_order(order) {
+        Ok(_) => println!("Order submitted successfully!"),
+        Err(_) => println!("Error submitting order, please try again!"),
+    }
 }

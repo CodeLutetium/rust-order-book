@@ -37,26 +37,57 @@ impl OrderBook {
         self.sort_orders();
 
         // Check for execution
-        if !self.buy_orders.is_empty() && !self.sell_orders.is_empty() && self.buy_orders[0].price >= self.sell_orders[0].price {
+        while !self.buy_orders.is_empty() && !self.sell_orders.is_empty() && self.buy_orders[0].price >= self.sell_orders[0].price {
             self.execute_orders();
         }
         Ok(())
     }
 
     fn execute_orders(&mut self) {
-        // Case 1: Buy order qty is same as sell order qty
         if self.buy_orders[0].quantity == self.sell_orders[0].quantity {
+            // Case 1: Buy order qty is same as sell order qty
             let buy_order: Order = self.buy_orders.remove(0);
             let _sell_order: Order = self.sell_orders.remove(0);
-
+            
             let transaction: Transaction = Transaction::new(buy_order.price, buy_order.quantity);
             self.transaction_book.post(transaction);
+        } else if self.buy_orders[0].quantity < self.sell_orders[0].quantity {
+            // Case 2: Buy order qty is less than sell order qty: we reduce the sell order qty
+            let buy_order: Order = self.buy_orders.remove(0);
+            
+            // Alter sell order qty
+            self.sell_orders[0].quantity -= buy_order.quantity;
+            
+            // Post to transaction book
+            let transaction: Transaction = Transaction::new(buy_order.price, buy_order.quantity);
+            self.transaction_book.post(transaction);
+        } else {
+            // Case 3: Buy order qty is more than sell order qty: we need to look at the next sell order
+            let sell_order: Order = self.sell_orders.remove(0);
+            let transaction_price: f64 = self.buy_orders[0].price;
+
+            // Alter buy order qty
+            self.buy_orders[0].quantity -= sell_order.quantity;
+
+
+            // Post to transaction book
+            let transaction: Transaction = Transaction::new(transaction_price, sell_order.quantity);
+            self.transaction_book.post(transaction);
+
+            // Recursion
+            if !self.buy_orders.is_empty() && !self.sell_orders.is_empty() && self.buy_orders[0].price >= self.sell_orders[0].price {
+                self.execute_orders();
+            }
         }
     }
 
     fn sort_orders(&mut self) {
         self.buy_orders.sort_by(|a, b| b.price.partial_cmp(&a.price).unwrap());
         self.sell_orders.sort_by(|a, b| a.price.partial_cmp(&b.price).unwrap());
+    }
+
+    pub fn print_transactions(&self) {
+        self.transaction_book.print();
     }
 
     pub fn print(&self) {

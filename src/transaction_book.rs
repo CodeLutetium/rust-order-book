@@ -24,7 +24,7 @@ impl TransactionBook {
         println!("+=============+=============+");
         
         for transaction in self.transactions.iter() {
-            let transaction_row: String = format!("  {:<11}|  {:<11.2}", transaction.quantity, transaction.price);
+            let transaction_row: String = format!("|  {:<11}|  {:<11.2}|", transaction.quantity, transaction.price);
             println!("{}", transaction_row);
             println!("+=============+=============+");
         }
