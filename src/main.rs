@@ -1,9 +1,10 @@
-use order_book::{Order, OrderBook, OrderType};
+use order_book::{Order, OrderBook, OrderType, TransactionBook};
 
 fn main() {
     println!("Hello, world! This is the order book project");
 
     let mut order_book: OrderBook = OrderBook::new();
+    let mut transaction_book: TransactionBook = TransactionBook::new();
 
     let order_1: Order = Order::new()
         .order_type(OrderType::Buy)
@@ -29,7 +30,7 @@ fn main() {
     let _ = order_book.add_order(order_1);
     let _ = order_book.add_order(order_2);
     let _ = order_book.add_order(order_3);
-    // let _ = order_book.add_order(order_4);
+    let _ = order_book.add_order(order_4);
 
     order_book.print();
 }
