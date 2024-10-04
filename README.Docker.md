@@ -5,6 +5,8 @@ When you're ready, start your application by running:
 
 Your application will be available at http://localhost:8080.
 
+> Note: There is some problem accepting stdin when using docker compose. To get the desired behaviour, use `docker build -t rust-order-book .` and `docker run -it rust-order-book` instead.
+
 ### Deploying your application to the cloud
 
 First, build your image, e.g.: `docker build -t myapp .`.
@@ -19,4 +21,5 @@ Consult Docker's [getting started](https://docs.docker.com/go/get-started-sharin
 docs for more detail on building and pushing.
 
 ### References
-* [Docker's Rust guide](https://docs.docker.com/language/rust/)
+
+- [Docker's Rust guide](https://docs.docker.com/language/rust/)
