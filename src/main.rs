@@ -1,7 +1,20 @@
 use order_book::{Order, OrderBook, OrderBuilder, OrderType};
+use sqlx::{migrate, postgres::PgPoolOptions};
 use std::io;
+use dotenv::dotenv;
+use std::env;
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), anyhow::Error>{
+    // Create pg connection pool
+    dotenv().ok();
+    let pg_connection_str: String = env::var("POSTGRES_URL").unwrap();
+    let pool = PgPoolOptions::new().max_connections(5).connect(&pg_connection_str).await?;
+
+    // Run migrations
+    migrate!("./migrations").run(&pool).await?;
+
+    // Initialize order book
     let mut order_book: OrderBook = OrderBook::new();
 
     println!("Welcome to the order book project! This simple program aims to simulate a simple order book.");
@@ -33,6 +46,8 @@ fn main() {
             }
         }
     }
+
+    Ok(())
 }
 
 fn handle_create_order(order_book: &mut OrderBook) {
