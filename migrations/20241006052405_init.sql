@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS public.users
     "user_id" uuid NOT NULL,
     username text COLLATE pg_catalog."default" NOT NULL,
     owned integer NOT NULL DEFAULT 0,
-    cash integer NOT NULL DEFAULT 0,
+    cash money NOT NULL DEFAULT 0,
     password text COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT userid PRIMARY KEY ("user_id"),
     CONSTRAINT username UNIQUE (username)
