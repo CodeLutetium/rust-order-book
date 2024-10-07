@@ -2,6 +2,9 @@ pub mod order;
 pub mod order_book;
 pub mod transaction;
 pub mod transaction_book;
+pub mod user;
+
+pub use user::User;
 
 pub use order::Order;
 pub use order::OrderType;
