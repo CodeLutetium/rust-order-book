@@ -11,5 +11,18 @@ sqlx = { version = "0.8", features = [
     "tls-native-tls",
     "postgres",
     "macros",
+    "uuid",
+    "bigdecimal",
 ] }
 tokio = { version = "1", features = ["full"] }
+pbkdf2 = { version = "0.12", features = ["simple"] }
+rand_core = { version = "0.6", features = ["std"] }
+bigdecimal = "0.4.5"
+
+[dependencies.uuid]
+version = "1.10.0"
+features = [
+    "v4",                # Lets you generate random UUIDs
+    "fast-rng",          # Use a faster (but still sufficiently random) RNG
+    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+]
