@@ -2,6 +2,8 @@ use actix_web::{web, HttpResponse, Responder};
 use serde::Serialize;
 use sqlx::{Pool, Postgres};
 
+use crate::check_existing_user;
+
 #[derive(Serialize)]
 struct UsernameValidationResponse {
     is_valid: bool,
@@ -13,12 +15,7 @@ pub async fn check_username(
 ) -> impl Responder {
     println!("Checking username: {}", username);
     
-    let exists: (bool,) = sqlx::query_as("SELECT EXISTS (SELECT 1 FROM users WHERE username = $1)")
-        .bind(username.as_str().trim())
-        .fetch_one(pool.get_ref())
-        .await.unwrap();
-
-    let is_valid: bool = !exists.0;
+    let is_valid: bool = check_existing_user(pool.get_ref(), username.to_string()).await;
 
     let response: UsernameValidationResponse = UsernameValidationResponse { is_valid };
 

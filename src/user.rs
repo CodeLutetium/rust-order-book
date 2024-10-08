@@ -57,38 +57,7 @@ impl User {
         }
     }
 
-    /// Inserts user into the database
-    pub async fn insert_user(pool: Pool<Postgres>, user: User) {
-        sqlx::query("INSERT INTO users (user_id, username, owned, cash, password) VALUES ($1, $2, $3, $4, $5)")
-            .bind(user.user_id)
-            .bind(user.username)
-            .bind(user.owned)
-            .bind(user.cash)
-            .bind(user.password)
-            .execute(&pool)
-            .await
-            .unwrap();
-    }
 
-    /// Updates user's cash in the database
-    pub async fn update_cash(pool: Pool<Postgres>, user_id: Uuid, cash: PgMoney) {
-        sqlx::query("UPDATE users SET cash = $1 WHERE user_id = $2")
-            .bind(cash)
-            .bind(user_id)
-            .execute(&pool)
-            .await
-            .unwrap();
-    }
-
-    /// Updates user's owned in the database
-    pub async fn update_owned(pool: Pool<Postgres>, user_id: Uuid, owned: i32) {
-        sqlx::query("UPDATE users SET owned = $1 WHERE user_id = $2")
-            .bind(owned)
-            .bind(user_id)
-            .execute(&pool)
-            .await
-            .unwrap();
-    }
 }
 
 pub struct UserBuilder {
