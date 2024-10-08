@@ -18,6 +18,8 @@ tokio = { version = "1", features = ["full"] }
 pbkdf2 = { version = "0.12", features = ["simple"] }
 rand_core = { version = "0.6", features = ["std"] }
 bigdecimal = "0.4.5"
+actix-web = "4.9.0"
+serde = "1.0.210"
 
 [dependencies.uuid]
 version = "1.10.0"

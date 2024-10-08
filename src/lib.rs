@@ -5,6 +5,7 @@ pub mod transaction_book;
 pub mod user;
 
 pub use user::User;
+pub use user::check_username;
 
 pub use order::Order;
 pub use order::OrderType;

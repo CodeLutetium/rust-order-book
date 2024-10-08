@@ -9,6 +9,8 @@ use pbkdf2::{
     },
     Pbkdf2
 };
+use serde::Serialize;
+use actix_web::{web, HttpResponse, Responder};
 
 #[derive(Debug, FromRow)]
 pub struct User {
@@ -143,4 +145,20 @@ impl UserBuilder {
             password: self.password.unwrap(),
         }
     }
+}
+
+#[derive(Serialize)]
+struct UsernameValidationResponse {
+    is_valid: bool,
+}
+
+pub async fn check_username(username: web::Path<String>) -> impl Responder {
+    let is_valid: bool = match username.as_str() {
+        "admin" => false,
+        _ => true,
+    };
+
+    let response: UsernameValidationResponse = UsernameValidationResponse { is_valid };
+
+    HttpResponse::Ok().json(response)
 }
