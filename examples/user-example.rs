@@ -67,6 +67,9 @@ async fn main() -> Result<(), anyhow::Error>{
                     .build();
 
                 User::insert_user(pool.clone(), user).await;
+
+                username = username.trim().to_string();
+                println!("{username} successfully created");
             }
 
             "2" => {
