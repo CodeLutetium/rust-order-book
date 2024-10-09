@@ -1,3 +1,4 @@
+// DEPRECATED, kept for reference
 use bigdecimal::BigDecimal;
 use sqlx::{Pool, Postgres};
 use sqlx::{postgres::types::PgMoney, prelude::FromRow};

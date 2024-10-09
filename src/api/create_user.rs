@@ -1,47 +1,44 @@
-use actix_web::{web, HttpResponse, Result};
+use actix_web::{web, HttpResponse};
 use serde::Deserialize;
-use sqlx::{postgres::types::PgMoney, FromRow, Pool, Postgres};
-use uuid::Uuid;
+use sqlx::{Pool, Postgres};
+
+use crate::{is_username_available, insert_user, PostgresUser};
 
 #[derive(Debug, Deserialize)]
 pub struct UserInput {
     username: String,
     owned: i32,
-    cash: f64,
+    cash: String,
     password: String,
 }
-
-
-#[derive(Debug, FromRow)]
-pub struct User {
-    user_id: Uuid,
-    username: String,
-    owned: i32,
-    cash: PgMoney,
-    password: String,
-}
-
 
 pub async fn create_user(
     pool: web::Data<Pool<Postgres>>,
-    user: web::Form<UserInput>
+    user: web::Form<UserInput>,
 ) -> HttpResponse {
     println!("request received");
-    println!("{}", format!("{:#?}", user));
-    
+    // println!("{}", format!("{:#?}", user));
 
-    HttpResponse::Ok().body(format!("User successfully created"))
-}
+    // Second layer of check to make sure user does not exist
+    if is_username_available(pool.get_ref(), user.username.clone()).await == false {
+        return HttpResponse::BadRequest().body(format!("Error: User exists"));
+    }
 
-/// Inserts user into the database
-async fn insert_user(pool: Pool<Postgres>, user: User) {
-    sqlx::query("INSERT INTO users (user_id, username, owned, cash, password) VALUES ($1, $2, $3, $4, $5)")
-        .bind(user.user_id)
-        .bind(user.username)
-        .bind(user.owned)
-        .bind(user.cash)
-        .bind(user.password)
-        .execute(&pool)
-        .await
-        .unwrap();
+    // Create user object
+    let postgres_user: PostgresUser = PostgresUser::new()
+        .set_username(user.username.to_owned())
+        .set_owned(user.owned)
+        .set_cash(user.cash.to_owned())
+        .set_password(user.password.to_owned())
+        .build();
+
+    // Insert into DB
+    match insert_user(pool.get_ref(), postgres_user).await {
+        Ok(_) => {
+            return HttpResponse::Ok().body(format!("User successfully created"));
+        }
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("Error creating user. Error code: {}", e));
+        }
+    }
 }

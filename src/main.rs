@@ -1,6 +1,6 @@
 use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
-use order_book::{check_username, create_user};
+use order_book::{check_username, create_user, login};
 use sqlx::{migrate, postgres::PgPoolOptions};
 use std::{env, io};
 
@@ -24,10 +24,14 @@ async fn main() -> std::io::Result<()> {
     println!("Migrations complete, ready to accept requests");
 
     HttpServer::new(move || {
-        App::new().app_data(web::Data::new(pool.clone())).route(
-            "/api/usernames/{username}/valid",
-            web::get().to(check_username),
-        ).route("/api/create-user", web::post().to(create_user))
+        App::new()
+            .app_data(web::Data::new(pool.clone()))
+            .route(
+                "/api/usernames/{username}/valid",
+                web::get().to(check_username),
+            )
+            .route("/api/create-user", web::post().to(create_user))
+            .route("/api/login", web::post().to(login))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
