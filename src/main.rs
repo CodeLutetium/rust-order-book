@@ -1,4 +1,5 @@
-use actix_web::{web, App, HttpServer};
+use actix_cors::Cors;
+use actix_web::{web, http, App, HttpServer};
 use dotenv::dotenv;
 use order_book::{check_username, create_user, login};
 use sqlx::{migrate, postgres::PgPoolOptions};
@@ -24,7 +25,16 @@ async fn main() -> std::io::Result<()> {
     println!("Migrations complete, ready to accept requests");
 
     HttpServer::new(move || {
+        // Set up CORS
+        let cors = Cors::default()
+            .allowed_origin("http://localhost:5173")
+            .allowed_methods(vec!["GET", "POST"])
+            .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+            .allowed_header(http::header::CONTENT_TYPE)
+            .max_age(3600);
+
         App::new()
+            .wrap(cors)
             .app_data(web::Data::new(pool.clone()))
             .route(
                 "/api/usernames/{username}/valid",
