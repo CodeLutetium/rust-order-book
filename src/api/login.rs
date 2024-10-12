@@ -14,7 +14,7 @@ pub async fn login(
     pool: web::Data<Pool<Postgres>>,
     login_input: web::Form<LoginInput>,
 ) -> HttpResponse {
-    println!("Login request received");
+    println!("Login request received for {}", login_input.username);
 
     match authenticate_user(
         pool.get_ref(),
@@ -27,9 +27,11 @@ pub async fn login(
                 "owned": user_details.owned,
                 "cash": user_details.cash,
             });
+            println!("User {} authenticated", login_input.username);
             HttpResponse::Ok().json(response_body)
         },
         Err(_) => {
+            println!("Failed to authenticate user {}", login_input.username);
             HttpResponse::Unauthorized().body("Invalid username or password")
         }
     }

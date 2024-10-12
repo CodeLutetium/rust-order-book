@@ -35,7 +35,11 @@ pub async fn create_user(
     // Insert into DB
     match insert_user(pool.get_ref(), postgres_user).await {
         Ok(_) => {
-            return HttpResponse::Ok().body(format!("User successfully created"));
+            let response_body = serde_json::json!({
+                "owned": user.owned,
+                "cash": user.cash,
+            });
+            HttpResponse::Ok().json(response_body)
         }
         Err(e) => {
             return HttpResponse::InternalServerError().body(format!("Error creating user. Error code: {}", e));
