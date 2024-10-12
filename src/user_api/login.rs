@@ -1,13 +1,22 @@
 use actix_web::{web, HttpResponse};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Postgres};
 
 use crate::authenticate_user;
+
+use super::create_jwt;
 
 #[derive(Deserialize)]
 pub struct LoginInput {
     username: String,
     password: String,
+}
+
+#[derive(Serialize)]
+struct LoginResponse {
+    jwt_token: String,
+    owned: i32,
+    cash: f64,
 }
 
 pub async fn login(
@@ -23,9 +32,13 @@ pub async fn login(
     )
     .await {
         Ok(user_details) => {
-            let response_body = serde_json::json!({
-                "owned": user_details.owned,
-                "cash": user_details.cash,
+            // Create jwt_token
+            let jwt_token: String = create_jwt(login_input.username.clone()).unwrap();
+
+            let response_body = serde_json::json!(LoginResponse{
+                jwt_token,
+                owned: user_details.owned,
+                cash: user_details.cash,
             });
             println!("User {} authenticated", login_input.username);
             HttpResponse::Ok().json(response_body)
