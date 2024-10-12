@@ -2,7 +2,7 @@ use actix_web::{web, HttpResponse};
 use serde::Deserialize;
 use sqlx::{Pool, Postgres};
 
-use crate::{is_username_available, insert_user, PostgresUser};
+use crate::{insert_user, is_username_available, create_jwt, PostgresUser};
 
 #[derive(Debug, Deserialize)]
 pub struct UserInput {
@@ -26,7 +26,7 @@ pub async fn create_user(
 
     // Create user object
     let postgres_user: PostgresUser = PostgresUser::new()
-        .set_username(user.username.to_owned())
+        .set_username(user.username.clone())
         .set_owned(user.owned)
         .set_cash(user.cash.to_owned())
         .set_password(user.password.to_owned())
@@ -35,7 +35,10 @@ pub async fn create_user(
     // Insert into DB
     match insert_user(pool.get_ref(), postgres_user).await {
         Ok(_) => {
+            let jwt: String = create_jwt(user.username.clone()).unwrap();
+
             let response_body = serde_json::json!({
+                "jwt": jwt,
                 "owned": user.owned,
                 "cash": user.cash,
             });

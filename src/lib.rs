@@ -11,6 +11,7 @@ pub mod postgres_functions;
 pub use user_api::validate_username::check_username;
 pub use user_api::create_user::create_user;
 pub use user_api::login::login;
+pub use user_api::jwt::create_jwt;
 
 pub use postgres_functions::PostgresUser;
 pub use postgres_functions::is_username_available;

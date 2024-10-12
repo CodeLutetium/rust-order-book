@@ -181,3 +181,31 @@ pub async fn authenticate_user(
         Err(anyhow::Error::msg("User not found"))
     }
 }
+
+/// Returns user details from DB given username only. This function is used for JWT authentication.
+pub async fn get_user_details(pool: &PgPool, username: String) -> anyhow::Result<UserDetails> {
+    let maybe_user: Option<PostgresUser> =
+        sqlx::query_as("SELECT * FROM users WHERE username = $1")
+            .bind(username)
+            .fetch_optional(pool)
+            .await?;
+
+    // User does not exist
+    if maybe_user.is_none() {
+        return Err(anyhow::Error::msg("User not found"));
+    }
+
+    let user: PostgresUser = maybe_user.unwrap();
+    let converted_cash: f64 = user
+        .cash
+        .to_bigdecimal(2)
+        .to_string()
+        .parse::<f64>()
+        .with_context(|| "Failed to convert cash to f64")?;
+
+    let return_user: UserDetails = UserDetails {
+        owned: user.owned,
+        cash: converted_cash,
+    };
+    Ok(return_user)
+}

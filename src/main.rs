@@ -1,7 +1,7 @@
 use actix_cors::Cors;
-use actix_web::{web, http, App, HttpServer};
+use actix_web::{http, web, App, HttpServer};
 use dotenv::dotenv;
-use order_book::{check_username, create_user, login};
+use order_book::{check_username, create_user, login, user_api::login::jwt_login};
 use sqlx::{migrate, postgres::PgPoolOptions};
 use std::{env, io};
 
@@ -36,14 +36,13 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .app_data(web::Data::new(pool.clone()))
-            .route(
-                "/api/users/{username}/valid",
-                web::get().to(check_username),
-            )
+            .route("/api/users/{username}/valid", web::get().to(check_username))
             .route("/api/users/create-user", web::post().to(create_user))
             .route("/api/users/login", web::post().to(login))
+            .route("/api/users/get-user", web::get().to(jwt_login))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
     .await
 }
+

@@ -12,7 +12,7 @@ struct Claims {
 pub fn create_jwt(username: String) -> Result<String, jsonwebtoken::errors::Error> {
     // Load secret key from .env file
     dotenv().ok();
-    let secret: &str = &std::env::var("JWT_SECRET").expect("JWT_SECRET must be set in .env file");
+    let secret: &str = &std::env::var("JWT_SECRETKEY").expect("JWT_SECRETKEY must be set in .env file");
 
     let claims = Claims {
         sub: username,                                  // username
@@ -29,7 +29,7 @@ pub fn create_jwt(username: String) -> Result<String, jsonwebtoken::errors::Erro
 pub fn validate_jwt(token: &str) -> Result<String, jsonwebtoken::errors::Error> {
     // Load secret key from .env file
     dotenv().ok();
-    let secret: &str = &std::env::var("JWT_SECRET").expect("JWT_SECRET must be set in .env file");
+    let secret: &str = &std::env::var("JWT_SECRETKEY").expect("JWT_SECRETKEY must be set in .env file");
 
     let token_data = jsonwebtoken::decode::<Claims>(
         &token,
