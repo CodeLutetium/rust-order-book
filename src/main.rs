@@ -37,11 +37,11 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(web::Data::new(pool.clone()))
             .route(
-                "/api/usernames/{username}/valid",
+                "/api/users/{username}/valid",
                 web::get().to(check_username),
             )
-            .route("/api/create-user", web::post().to(create_user))
-            .route("/api/login", web::post().to(login))
+            .route("/api/users/create-user", web::post().to(create_user))
+            .route("/api/users/login", web::post().to(login))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
