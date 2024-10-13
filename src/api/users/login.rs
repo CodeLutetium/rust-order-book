@@ -2,7 +2,7 @@ use actix_web::{web, Error, HttpRequest, HttpResponse};
 use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Postgres};
 
-use crate::{authenticate_user, postgres_functions::postgres_user::get_user_details, users::jwt::validate_jwt};
+use crate::{authenticate_user, postgres_functions::postgres_user::get_user_details, api::users::jwt::validate_jwt};
 
 use super::create_jwt;
 

@@ -1,7 +1,7 @@
 use actix_cors::Cors;
 use actix_web::{http, web, App, HttpServer};
 use dotenv::dotenv;
-use order_book::{check_username, create_user, login, users::login::jwt_login};
+use order_book::{check_username, create_user, login, jwt_login, OrderBook};
 use sqlx::{migrate, postgres::PgPoolOptions};
 use std::{env, io};
 
@@ -23,6 +23,8 @@ async fn main() -> std::io::Result<()> {
         .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
 
     println!("Migrations complete, ready to accept requests");
+
+    let order_book: OrderBook = OrderBook::new();
 
     HttpServer::new(move || {
         // Set up CORS
