@@ -1,7 +1,7 @@
 use actix_cors::Cors;
 use actix_web::{http, web, App, HttpServer};
 use dotenv::dotenv;
-use order_book::{check_username, create_user, login, user_api::login::jwt_login};
+use order_book::{check_username, create_user, login, users::login::jwt_login};
 use sqlx::{migrate, postgres::PgPoolOptions};
 use std::{env, io};
 

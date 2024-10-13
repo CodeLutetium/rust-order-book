@@ -3,15 +3,15 @@ pub mod order_book;
 pub mod transaction;
 pub mod transaction_book;
 // pub mod user;
-pub mod user_api;
+pub mod users;
 pub mod postgres_functions;
 
 // pub use user::User;
 
-pub use user_api::validate_username::check_username;
-pub use user_api::create_user::create_user;
-pub use user_api::login::login;
-pub use user_api::jwt::create_jwt;
+pub use users::validate_username::check_username;
+pub use users::create_user::create_user;
+pub use users::login::login;
+pub use users::jwt::create_jwt;
 
 pub use postgres_functions::PostgresUser;
 pub use postgres_functions::is_username_available;
