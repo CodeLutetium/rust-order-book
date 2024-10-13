@@ -1,7 +1,7 @@
 use actix_cors::Cors;
 use actix_web::{http, web, App, HttpServer};
 use dotenv::dotenv;
-use order_book::{check_username, create_user, get_order_book, jwt_login, login, OrderBook};
+use order_book::{check_username, create_user, get_order_book, jwt_login, login, order_book_websocket_handler, OrderBook};
 use sqlx::{migrate, postgres::PgPoolOptions};
 use std::{ env, io, sync::{Arc, Mutex}};
 
@@ -55,6 +55,7 @@ async fn main() -> std::io::Result<()> {
             .route("/api/users/login", web::post().to(login))
             .route("/api/users/get-user", web::get().to(jwt_login))
             .route("/api/orders/get", web::get().to(get_order_book))
+            .route("/ws/order-book", web::get().to(order_book_websocket_handler))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
