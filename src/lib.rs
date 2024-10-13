@@ -14,6 +14,8 @@ pub use api::users::login::login;
 pub use api::users::login::jwt_login;
 pub use api::users::jwt::create_jwt;
 
+pub use api::order_book::get_order_book::get_order_book;
+
 pub use postgres_functions::PostgresUser;
 pub use postgres_functions::is_username_available;
 pub use postgres_functions::insert_user;

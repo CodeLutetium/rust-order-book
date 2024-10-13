@@ -1,16 +1,19 @@
 use std::iter::zip;
 
 use anyhow::Ok;
+use serde::Deserialize;
+use serde::Serialize;
 
 use crate::Transaction;
 use crate::Order;
 use crate::OrderType;
 use crate::TransactionBook;
 
+#[derive(Serialize, Deserialize)]
 pub struct OrderBook {
-    buy_orders: Vec<Order>,
-    sell_orders: Vec<Order>,
-    transaction_book: TransactionBook,
+    pub buy_orders: Vec<Order>,
+    pub sell_orders: Vec<Order>,
+    pub transaction_book: TransactionBook,
 }
 
 impl OrderBook {

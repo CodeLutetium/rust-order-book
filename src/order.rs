@@ -1,8 +1,12 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
 pub enum OrderType {
     Buy,
     Sell
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct Order {
     pub order_type: OrderType,
     pub price: f64,
@@ -30,17 +34,17 @@ impl OrderBuilder {
         }
     }
 
-    pub fn order_type(&mut self, order_type: OrderType) -> &Self {
+    pub fn order_type(mut self, order_type: OrderType) -> Self {
         self.order_type = Some(order_type);
         self
     }
 
-    pub fn price(&mut self, price: f64) -> &Self {
+    pub fn price(mut self, price: f64) -> Self {
         self.price = Some(price);
         self
     }
 
-    pub fn quantity(&mut self, quantity: u32) -> &Self {
+    pub fn quantity(mut self, quantity: u32) -> Self {
         self.quantity = Some(quantity);
         self
     }

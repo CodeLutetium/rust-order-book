@@ -1,7 +1,9 @@
 use crate::Transaction;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct TransactionBook {
-    transactions: Vec<Transaction>,
+    pub transactions: Vec<Transaction>,
 }
 
 impl TransactionBook {
