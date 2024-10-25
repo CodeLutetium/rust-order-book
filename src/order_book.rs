@@ -28,10 +28,10 @@ impl OrderBook {
     pub fn add_order(&mut self, order: Order) -> Result<(), anyhow::Error>{
         // Add to array based on order type
         match order.order_type {
-            OrderType::Buy => {
+            OrderType::BUY => {
                 self.buy_orders.push(order);
             }
-            OrderType::Sell => {
+            OrderType::SELL => {
                 self.sell_orders.push(order);
             }
         }

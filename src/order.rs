@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum OrderType {
-    Buy,
-    Sell
+    BUY,
+    SELL,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Order {
     pub order_type: OrderType,
     pub price: f64,
@@ -30,7 +30,7 @@ impl OrderBuilder {
         OrderBuilder {
             order_type: None,
             price: None,
-            quantity: None
+            quantity: None,
         }
     }
 
@@ -52,8 +52,8 @@ impl OrderBuilder {
     pub fn build(self) -> Order {
         let order_type: OrderType = self.order_type.expect("Order type cannot be empty");
         let price: f64 = self.price.expect("Price cannot be empty");
-        let quantity:u32 = self.quantity.expect("Quantity cannot be empty");
-        
+        let quantity: u32 = self.quantity.expect("Quantity cannot be empty");
+
         Order {
             order_type,
             price,

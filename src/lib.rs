@@ -13,9 +13,11 @@ pub use api::users::create_user::create_user;
 pub use api::users::login::login;
 pub use api::users::login::jwt_login;
 pub use api::users::jwt::create_jwt;
+pub use api::users::jwt::validate_jwt;
 
 pub use api::order_book::get_order_book::get_order_book;
-pub use api::order_book::get_order_book::order_book_websocket_handler;
+pub use api::order_book::websocket::order_book_websocket_handler;
+pub use api::order_book::new_order::new_order_request;
 
 pub use postgres_functions::PostgresUser;
 pub use postgres_functions::is_username_available;
