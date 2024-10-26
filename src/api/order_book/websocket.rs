@@ -27,7 +27,7 @@ pub async fn order_book_websocket_handler(
                 // Must be implemented so that the connection does not terminate
                 AggregatedMessage::Ping(msg) => {
                     // respond to PING frame with PONG frame
-                    println!("Received message: {:?}", msg);
+                    // println!("Received message: {:?}", msg);
                     session.pong(&msg).await.unwrap();
                 }
                 _ => {

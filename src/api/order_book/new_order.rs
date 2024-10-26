@@ -16,7 +16,7 @@ pub struct NewOrder {
 }
 
 pub async fn new_order_request(order_book: web::Data<Arc<Mutex<OrderBook>>>, new_order_request: web::Form<NewOrder>) -> HttpResponse {
-    println!("New order request received from {}", new_order_request.username);
+    println!("New order request: {:?}", new_order_request);
 
     // Validate JWT
     match validate_jwt(&new_order_request.jwt) {
@@ -24,12 +24,12 @@ pub async fn new_order_request(order_book: web::Data<Arc<Mutex<OrderBook>>>, new
             if username != new_order_request.username {
                 println!("JWT username does not match request username");
                 
-                return HttpResponse::Unauthorized().body("Error authenticating user");
+                return HttpResponse::Unauthorized().body("Invalid user credentials");
             }
         }
         Err(_) => {
             println!("JWT username does not match request username");
-            return HttpResponse::Unauthorized().body("Error authenticating user");
+            return HttpResponse::Unauthorized().body("Invalid user credentials");
         }
     }
 
